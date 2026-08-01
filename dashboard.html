@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Data Center Monitor | Saudi Cities Weather</title>
+  <title>ALJ-Data Center Monitor | Saudi Cities Weather</title>
   <meta name="description" content="Live data center environmental monitor and Saudi Arabia cities weather dashboard powered by Blynk IoT."/>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -80,6 +80,45 @@
     }
     .refresh-btn:hover{opacity:.85;transform:translateY(-1px);}
     .refresh-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+
+    .notif-btn {
+      background: var(--bg-card2);
+      border: 1px solid var(--border);
+      color: var(--text-dim); font-size: 12px; font-weight: 600;
+      padding: 8px 14px; border-radius: 8px; cursor: pointer;
+      transition: all .2s;
+    }
+    .notif-btn:hover { border-color: var(--accent-amber); color: var(--accent-amber); }
+    .notif-btn.granted { border-color: var(--accent-green); color: var(--accent-green); }
+    .notif-btn.denied  { border-color: var(--accent-red);   color: var(--accent-red); opacity:.6; cursor:not-allowed; }
+
+    /* Alarm overlay banner */
+    #alarmBanner {
+      display: none;
+      position: fixed; top: 76px; left: 50%; transform: translateX(-50%);
+      z-index: 9999;
+      background: rgba(239,68,68,.97);
+      border: 1px solid #f87171;
+      border-radius: 14px;
+      padding: 14px 28px;
+      font-size: 14px; font-weight: 700; color: #fff;
+      box-shadow: 0 8px 40px rgba(239,68,68,.5);
+      animation: bannerPop .3s ease;
+      display: none;
+      align-items: center; gap: 12px;
+      white-space: nowrap;
+    }
+    @keyframes bannerPop {
+      from { opacity:0; transform: translateX(-50%) translateY(-10px); }
+      to   { opacity:1; transform: translateX(-50%) translateY(0); }
+    }
+    #alarmBanner .close-banner {
+      background: rgba(255,255,255,.2); border: none; color: #fff;
+      width: 22px; height: 22px; border-radius: 50%;
+      cursor: pointer; font-size: 14px; line-height: 22px;
+      display: flex; align-items: center; justify-content: center;
+      margin-left: 8px; flex-shrink: 0;
+    }
 
     main { padding:32px 40px; max-width:1600px; margin:0 auto; }
 
@@ -243,9 +282,17 @@
       <span id="statusText">Live</span>
     </div>
     <span class="last-update" id="lastUpdate">—</span>
+    <button class="notif-btn" id="notifBtn" onclick="requestNotifPermission()" title="Enable desktop alarm notifications">&#128515; Enable Alerts</button>
     <button class="refresh-btn" id="refreshBtn" onclick="fetchAll()">&#x27F3; Refresh</button>
   </div>
 </header>
+
+<!-- Alarm Banner -->
+<div id="alarmBanner">
+  <span>&#128680;</span>
+  <span id="alarmBannerMsg">IT Room Alert!</span>
+  <button class="close-banner" onclick="dismissBanner()">&#x2715;</button>
+</div>
 
 <main>
 
@@ -400,7 +447,7 @@
       hEl.innerHTML = '<span style="font-size:14px;color:var(--text-muted)">No data</span>';
     }
 
-    // Alarm
+    // Alarm badge
     const badge = document.getElementById('alarmBadge');
     if (rawA !== null) {
       badge.innerHTML = alarm === 1
@@ -409,6 +456,9 @@
     } else {
       badge.innerHTML = '<span style="color:var(--text-muted);font-size:13px">No data</span>';
     }
+
+    // ── Trigger alarm system ──
+    checkAlarms(temp, humid);
   }
 
   async function fetchCities() {
@@ -474,6 +524,115 @@
     }));
   }
 
+  // ══════════════════════════════════════════════════
+  //  ALARM & NOTIFICATION SYSTEM
+  // ══════════════════════════════════════════════════
+
+  let alarmCooldown     = false;   // prevent repeated alerts every refresh
+  const COOLDOWN_MS     = 5 * 60 * 1000; // 5 min between alerts
+
+  // ── Request notification permission ──────────────
+  function requestNotifPermission() {
+    if (!('Notification' in window)) {
+      alert('Your browser does not support desktop notifications.');
+      return;
+    }
+    Notification.requestPermission().then(updateNotifBtn);
+  }
+
+  function updateNotifBtn() {
+    const btn  = document.getElementById('notifBtn');
+    const perm = Notification.permission;
+    if (perm === 'granted') {
+      btn.textContent = '&#9989; Alerts ON';
+      btn.className   = 'notif-btn granted';
+      btn.onclick     = null;
+    } else if (perm === 'denied') {
+      btn.textContent = '&#10060; Blocked';
+      btn.className   = 'notif-btn denied';
+      btn.onclick     = null;
+    } else {
+      btn.textContent = '&#128515; Enable Alerts';
+      btn.className   = 'notif-btn';
+    }
+  }
+
+  // ── Web Audio alarm beep ──────────────────────────
+  function playAlarmSound() {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const times = [0, 0.35, 0.7, 1.05, 1.4];
+      times.forEach(t => {
+        const osc  = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.type      = 'square';
+        osc.frequency.setValueAtTime(880, ctx.currentTime + t);
+        gain.gain.setValueAtTime(0.25, ctx.currentTime + t);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + t + 0.28);
+        osc.start(ctx.currentTime + t);
+        osc.stop(ctx.currentTime + t + 0.28);
+      });
+    } catch(e) { console.warn('Audio error:', e); }
+  }
+
+  // ── Show on-page banner ───────────────────────────
+  function showBanner(msg) {
+    const b = document.getElementById('alarmBanner');
+    document.getElementById('alarmBannerMsg').textContent = msg;
+    b.style.display = 'flex';
+  }
+  function dismissBanner() {
+    document.getElementById('alarmBanner').style.display = 'none';
+  }
+
+  // ── Main alarm checker ────────────────────────────
+  function checkAlarms(temp, humid) {
+    const tempBad  = !isNaN(temp)  && temp  > 23;
+    const humidLow = !isNaN(humid) && humid < 40;
+    const humidHigh= !isNaN(humid) && humid > 60;
+    const triggered = tempBad || humidLow || humidHigh;
+
+    if (!triggered) {
+      document.getElementById('alarmBanner').style.display = 'none';
+      return;
+    }
+
+    // Build alert message
+    const msgs = [];
+    if (tempBad)   msgs.push('Temp ' + temp.toFixed(1) + '°C > 23°C');
+    if (humidLow)  msgs.push('Humidity ' + humid.toFixed(0) + '% < 40%');
+    if (humidHigh) msgs.push('Humidity ' + humid.toFixed(0) + '% > 60%');
+    const fullMsg = '🚨 IT Room: ' + msgs.join(' | ');
+
+    // Always show banner
+    showBanner(fullMsg);
+    // Change page title to alert
+    document.title = '⚠️ ALARM! ' + msgs[0];
+
+    // Sound + notification only once per cooldown period
+    if (alarmCooldown) return;
+    alarmCooldown = true;
+    setTimeout(() => { alarmCooldown = false; }, COOLDOWN_MS);
+
+    // Play beep sound
+    playAlarmSound();
+
+    // Desktop notification
+    if (Notification.permission === 'granted') {
+      const n = new Notification('🚨 Data Center ALARM!', {
+        body: msgs.join('\n'),
+        icon: 'https://cdn-icons-png.flaticon.com/512/2621/2621232.png',
+        requireInteraction: true,
+        tag: 'datacenter-alarm'
+      });
+      n.onclick = () => { window.focus(); n.close(); };
+    }
+  }
+
+  // ══════════════════════════════════════════════════
+
   let fetching = false;
   async function fetchAll() {
     if (fetching) return;
@@ -483,10 +642,10 @@
     const led  = document.getElementById('liveIndicator');
     const stat = document.getElementById('statusText');
 
-    btn.disabled      = true;
-    btn.textContent   = 'Loading…';
+    btn.disabled         = true;
+    btn.textContent      = 'Loading…';
     led.style.background = '#f59e0b';
-    stat.textContent  = 'Fetching…';
+    stat.textContent     = 'Fetching…';
 
     try {
       await Promise.all([fetchITRoom(), fetchCities()]);
@@ -494,16 +653,25 @@
       document.getElementById('lastUpdate').textContent =
         'Updated ' + now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'});
       led.style.background = '#10b981';
-      stat.textContent = 'Live';
+      stat.textContent     = 'Live';
+      // Reset title if no alarm
+      if (document.title.startsWith('⚠')) {
+        const [rawT, rawH] = await Promise.all([fetchPin(0), fetchPin(1)]);
+        const t = parseFloat(rawT), h = parseFloat(rawH);
+        if (!(t > 23 || h < 40 || h > 60)) document.title = 'Data Center Monitor | Saudi Cities Weather';
+      }
     } catch {
       led.style.background = '#ef4444';
-      stat.textContent = 'Error';
+      stat.textContent     = 'Error';
     }
 
     btn.disabled    = false;
     btn.textContent = '&#x27F3; Refresh';
     fetching = false;
   }
+
+  // Init notification button state
+  updateNotifBtn();
 
   fetchAll();
   setInterval(fetchAll, 5 * 60 * 1000);
