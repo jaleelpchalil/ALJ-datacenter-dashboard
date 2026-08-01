@@ -4,239 +4,317 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>ALJ Data Center Monitor | Saudi Cities Weather</title>
-  <meta name="description" content="Live data center environmental monitor and Saudi Arabia cities weather dashboard."/>
+  <meta name="description" content="Live Data Center Environmental Monitor & Saudi Arabia Cities Weather Dashboard."/>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg:         #06080f;
-      --bg-card:    rgba(17,24,39,.75);
-      --bg-card2:   rgba(26,34,53,.85);
-      --glass:      rgba(255,255,255,.04);
-      --border:     rgba(255,255,255,.07);
-      --blue:       #3b82f6;
-      --cyan:       #06b6d4;
-      --green:      #10b981;
-      --red:        #ef4444;
-      --amber:      #f59e0b;
-      --orange:     #f97316;
-      --purple:     #8b5cf6;
-      --pink:       #ec4899;
-      --txt:        #f1f5f9;
-      --muted:      #64748b;
-      --dim:        #94a3b8;
+      --bg: #090d16;
+      --card-bg: rgba(16, 23, 38, 0.85);
+      --card-bg2: rgba(23, 33, 54, 0.9);
+      --border: rgba(255, 255, 255, 0.08);
+      --border-hover: rgba(59, 130, 246, 0.35);
+      --blue: #3b82f6;
+      --cyan: #06b6d4;
+      --green: #10b981;
+      --red: #ef4444;
+      --amber: #f59e0b;
+      --orange: #ff6b6b;
+      --txt: #f8fafc;
+      --muted: #64748b;
+      --dim: #94a3b8;
     }
-    *{box-sizing:border-box;margin:0;padding:0;}
-    body{
-      background:var(--bg);color:var(--txt);font-family:'Inter',sans-serif;min-height:100vh;
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--txt);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
       background-image:
-        radial-gradient(ellipse at 15% 0%,rgba(59,130,246,.15) 0%,transparent 50%),
-        radial-gradient(ellipse at 85% 5%,rgba(6,182,212,.1) 0%,transparent 45%),
-        radial-gradient(ellipse at 50% 100%,rgba(139,92,246,.06) 0%,transparent 40%);
+        radial-gradient(ellipse at 15% 0%, rgba(59, 130, 246, 0.12) 0%, transparent 50%),
+        radial-gradient(ellipse at 85% 5%, rgba(6, 182, 212, 0.08) 0%, transparent 45%),
+        radial-gradient(ellipse at 50% 100%, rgba(139, 92, 246, 0.05) 0%, transparent 40%);
+      padding-bottom: 40px;
     }
 
     /* ── Header ── */
-    header{
-      display:flex;align-items:center;justify-content:space-between;
-      padding:18px 36px;border-bottom:1px solid var(--border);
-      position:sticky;top:0;z-index:100;
-      background:rgba(6,8,15,.88);backdrop-filter:blur(16px);
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 36px;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(9, 13, 22, 0.92);
+      backdrop-filter: blur(16px);
     }
-    .logo{display:flex;align-items:center;gap:12px;}
-    .logo-icon{
-      width:42px;height:42px;border-radius:12px;
-      background:linear-gradient(135deg,var(--blue),var(--cyan));
-      display:flex;align-items:center;justify-content:center;font-size:22px;
-      box-shadow:0 4px 20px rgba(59,130,246,.35);
+    .logo { display: flex; align-items: center; gap: 12px; }
+    .logo-icon {
+      width: 40px; height: 40px; border-radius: 12px;
+      background: linear-gradient(135deg, var(--blue), var(--cyan));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
     }
-    .logo h1{font-size:17px;font-weight:800;letter-spacing:-.4px;}
-    .logo p{font-size:10px;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;}
-    .hdr-right{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
-    .badge{
-      display:flex;align-items:center;gap:6px;font-size:11px;color:var(--dim);
-      background:var(--bg-card2);border:1px solid var(--border);
-      padding:5px 12px;border-radius:20px;
-    }
-    .dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;}
-    @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.4;transform:scale(1.4);}}
-    .ts{font-size:10px;color:var(--muted);}
-    .btn{
-      border:none;font-size:11px;font-weight:700;padding:7px 16px;border-radius:8px;cursor:pointer;
-      transition:all .2s;
-    }
-    .btn-refresh{
-      background:linear-gradient(135deg,var(--blue),var(--cyan));color:#fff;
-      box-shadow:0 2px 12px rgba(59,130,246,.3);
-    }
-    .btn-refresh:hover{opacity:.85;transform:translateY(-1px);}
-    .btn-refresh:disabled{opacity:.4;cursor:not-allowed;transform:none;}
-    .btn-notif{
-      background:var(--bg-card2);border:1px solid var(--border);color:var(--dim);
-    }
-    .btn-notif:hover{border-color:var(--amber);color:var(--amber);}
-    .btn-notif.on{border-color:var(--green);color:var(--green);}
-    .btn-notif.off{border-color:var(--red);color:var(--red);opacity:.6;cursor:not-allowed;}
+    .logo h1 { font-size: 16px; font-weight: 800; letter-spacing: -0.3px; }
+    .logo p { font-size: 10px; color: var(--muted); letter-spacing: 0.5px; text-transform: uppercase; }
 
-    /* ── Main ── */
-    main{padding:28px 36px;max-width:1560px;margin:0 auto;}
-    .sec{
-      font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
-      color:var(--muted);margin:32px 0 14px;display:flex;align-items:center;gap:10px;
+    .hdr-right { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .badge {
+      display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--dim);
+      background: var(--card-bg2); border: 1px solid var(--border);
+      padding: 5px 12px; border-radius: 20px;
     }
-    .sec::after{content:'';flex:1;height:1px;background:var(--border);}
+    .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:0.4; transform:scale(1.4); } }
+    .ts { font-size: 10px; color: var(--muted); }
 
-    /* ── Gauge Row ── */
-    .gauge-row{
-      display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;
+    .btn {
+      border: none; font-size: 11px; font-weight: 700; padding: 7px 16px; border-radius: 8px; cursor: pointer;
+      transition: all 0.2s;
     }
-    .g-card{
-      background:var(--bg-card);border:1px solid var(--border);border-radius:22px;
-      padding:24px 28px 20px;position:relative;overflow:hidden;
-      backdrop-filter:blur(8px);
-      transition:transform .25s,border-color .25s,box-shadow .25s;
+    .btn-refresh {
+      background: linear-gradient(135deg, var(--blue), var(--cyan)); color: #fff;
+      box-shadow: 0 2px 12px rgba(59, 130, 246, 0.3);
     }
-    .g-card:hover{
-      transform:translateY(-3px);border-color:rgba(255,255,255,.13);
-      box-shadow:0 12px 40px rgba(0,0,0,.3);
-    }
-    .g-card::before{
-      content:'';position:absolute;top:0;left:0;right:0;height:3px;
-    }
-    .g-card.c-temp::before{background:linear-gradient(90deg,#ef4444,#f97316);}
-    .g-card.c-humid::before{background:linear-gradient(90deg,#3b82f6,#06b6d4);}
-    .g-card.c-alarm::before{background:linear-gradient(90deg,#8b5cf6,#ec4899);}
+    .btn-refresh:hover { opacity: 0.85; transform: translateY(-1px); }
+    .btn-refresh:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+    .btn-notif { background: var(--card-bg2); border: 1px solid var(--border); color: var(--dim); }
+    .btn-notif:hover { border-color: var(--amber); color: var(--amber); }
+    .btn-notif.on { border-color: var(--green); color: var(--green); }
+    .btn-notif.off { border-color: var(--red); color: var(--red); opacity: 0.6; cursor: not-allowed; }
 
-    .g-label{
-      font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;
-      color:var(--muted);margin-bottom:4px;
+    /* ── Main Container ── */
+    main { padding: 24px 36px; max-width: 1560px; margin: 0 auto; }
+    .sec-title {
+      font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+      color: var(--muted); margin: 28px 0 14px; display: flex; align-items: center; gap: 10px;
     }
+    .sec-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
-    /* SVG semi-circle gauge */
-    .gauge-box{
-      display:flex;flex-direction:column;align-items:center;justify-content:center;
-      position:relative;margin:4px auto 0;
+    /* ── IT Room Gauge Section ── */
+    .it-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
     }
-    .gauge-box svg{filter:drop-shadow(0 4px 16px rgba(0,0,0,.25));}
-    .arc-bg{fill:none;stroke:rgba(255,255,255,.06);stroke-linecap:round;}
-    .arc-fg{fill:none;stroke-linecap:round;transition:stroke-dashoffset 1.2s cubic-bezier(.4,0,.2,1);}
-    .gauge-val{
-      position:absolute;bottom:22px;left:50%;transform:translateX(-50%);
-      text-align:center;pointer-events:none;
+    .it-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 24px 26px 18px;
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(12px);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
     }
-    .gv{font-size:46px;font-weight:900;letter-spacing:-2px;line-height:1;}
-    .gu{font-size:14px;color:var(--dim);font-weight:500;margin-top:2px;}
-    .gauge-min,.gauge-max{
-      position:absolute;bottom:6px;font-size:10px;color:var(--muted);font-weight:600;
-    }
-    .gauge-min{left:16px;}
-    .gauge-max{right:16px;}
-
-    .g-sub{font-size:11px;color:var(--muted);text-align:center;margin-top:2px;}
-
-    /* alarm card */
-    .alarm-wrap{
-      height:100%;display:flex;flex-direction:column;align-items:center;
-      justify-content:center;gap:18px;padding:20px 0;
-    }
-    .alarm-ok{
-      display:inline-flex;align-items:center;gap:8px;
-      background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.25);
-      color:var(--green);padding:12px 22px;border-radius:14px;
-      font-size:15px;font-weight:700;
-    }
-    .alarm-bad{
-      display:inline-flex;align-items:center;gap:8px;
-      background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.25);
-      color:var(--red);padding:12px 22px;border-radius:14px;
-      font-size:15px;font-weight:700;
-      animation:blink 1s infinite;
-    }
-    @keyframes blink{0%,100%{opacity:1;}50%{opacity:.55;}}
-    .alarm-info{font-size:10px;color:var(--muted);text-align:center;line-height:1.7;}
-
-    /* ── City Cards ── */
-    .city-grid{
-      display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px;
-    }
-    .c-card{
-      background:var(--bg-card);border:1px solid var(--border);border-radius:18px;
-      padding:20px;position:relative;overflow:hidden;
-      backdrop-filter:blur(8px);
-      transition:transform .22s,border-color .22s,box-shadow .22s;
-    }
-    .c-card:hover{
-      transform:translateY(-3px);border-color:rgba(59,130,246,.3);
-      box-shadow:0 10px 32px rgba(59,130,246,.1);
-    }
-    .c-card .c-bg{
-      position:absolute;right:-8px;top:-8px;font-size:72px;opacity:.04;
-      pointer-events:none;user-select:none;
-    }
-    .c-name{
-      font-size:14px;font-weight:700;color:var(--txt);margin-bottom:14px;
-      display:flex;align-items:center;gap:6px;
-    }
-    .c-name small{font-weight:500;color:var(--muted);font-size:10px;margin-left:auto;}
-    .c-icon{font-size:32px;margin-bottom:6px;}
-    .c-temp{
-      font-size:42px;font-weight:900;letter-spacing:-2px;line-height:1;
-      background:linear-gradient(135deg,#f97316,#ef4444);
-      -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-    }
-    .c-temp-u{
-      font-size:15px;font-weight:500;-webkit-text-fill-color:var(--muted);color:var(--muted);
-    }
-    .c-desc{
-      font-size:11px;color:var(--muted);text-transform:capitalize;margin:5px 0 14px;
-    }
-    .c-stats{display:flex;gap:8px;}
-    .c-stat{
-      flex:1;background:rgba(255,255,255,.03);border-radius:8px;padding:8px 10px;
-    }
-    .c-stat-l{
-      font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
-      color:var(--muted);margin-bottom:2px;
-    }
-    .c-stat-v{font-size:14px;font-weight:800;}
-    .c-stat-v.h{color:var(--cyan);}
-    .c-stat-v.w{color:var(--blue);}
-
-    /* skeleton */
-    .sk{
-      background:linear-gradient(90deg,var(--bg-card2) 25%,rgba(255,255,255,.03) 50%,var(--bg-card2) 75%);
-      background-size:200% 100%;animation:shim 1.3s infinite;border-radius:6px;
-    }
-    @keyframes shim{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
-
-    /* alarm banner */
-    #alarmBanner{
-      display:none;position:fixed;top:72px;left:50%;transform:translateX(-50%);z-index:9999;
-      background:rgba(239,68,68,.96);border:1px solid #f87171;border-radius:14px;
-      padding:12px 24px;font-size:13px;font-weight:700;color:#fff;
-      box-shadow:0 8px 40px rgba(239,68,68,.5);
-      align-items:center;gap:10px;white-space:nowrap;
-      animation:bpop .3s ease;
-    }
-    @keyframes bpop{from{opacity:0;transform:translateX(-50%) translateY(-10px);}to{opacity:1;transform:translateX(-50%) translateY(0);}}
-    #alarmBanner .xb{
-      background:rgba(255,255,255,.2);border:none;color:#fff;width:20px;height:20px;
-      border-radius:50%;cursor:pointer;font-size:13px;display:flex;align-items:center;
-      justify-content:center;margin-left:6px;flex-shrink:0;
+    .it-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(255, 255, 255, 0.12);
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.3);
     }
 
-    footer{
-      text-align:center;font-size:10px;color:var(--muted);
-      padding:28px;border-top:1px solid var(--border);margin-top:40px;
+    .card-title {
+      font-size: 14px; font-weight: 700; color: var(--txt); margin-bottom: 12px;
     }
 
-    @media(max-width:960px){
-      header{padding:14px 18px;} main{padding:18px;}
-      .gauge-row{grid-template-columns:1fr 1fr;}
+    /* 270-Degree Round Arc Gauge */
+    .round-gauge-container {
+      position: relative;
+      width: 200px;
+      height: 200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
-    @media(max-width:580px){
-      .gauge-row{grid-template-columns:1fr;}
-      header{flex-wrap:wrap;gap:10px;}
-      .gv{font-size:36px;}
+    .round-gauge-container svg {
+      width: 200px;
+      height: 200px;
+    }
+    .gauge-track {
+      fill: none;
+      stroke: rgba(255, 255, 255, 0.1);
+      stroke-linecap: round;
+    }
+    .gauge-fill {
+      fill: none;
+      stroke-linecap: round;
+      transition: stroke-dasharray 1.2s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.4s ease;
+    }
+
+    .gauge-center-val {
+      position: absolute;
+      text-align: center;
+      pointer-events: none;
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 2px;
+    }
+    .g-main-val {
+      font-size: 42px; font-weight: 800; color: var(--txt); letter-spacing: -1px; line-height: 1;
+    }
+    .g-unit-val {
+      font-size: 18px; font-weight: 600; color: var(--dim);
+    }
+
+    .g-end-labels {
+      width: 170px;
+      margin: -18px auto 8px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    .card-ftr {
+      font-size: 11px; color: var(--muted); text-align: center; font-weight: 500; margin-top: 4px;
+    }
+
+    /* Alarm Box */
+    .alarm-content {
+      flex: 1; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: 20px 0;
+    }
+    .alarm-ok {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.25);
+      color: var(--green); padding: 12px 24px; border-radius: 14px;
+      font-size: 15px; font-weight: 700;
+    }
+    .alarm-bad {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.25);
+      color: var(--red); padding: 12px 24px; border-radius: 14px;
+      font-size: 15px; font-weight: 700;
+      animation: blink 1s infinite;
+    }
+    @keyframes blink { 0%,100% { opacity:1; } 50% { opacity:0.5; } }
+    .alarm-info { font-size: 11px; color: var(--muted); text-align: center; line-height: 1.6; }
+
+    /* ── Saudi Cities Grid ── */
+    .city-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 18px;
+    }
+
+    .city-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 18px 20px 14px;
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(12px);
+      transition: transform 0.22s, border-color 0.22s, box-shadow 0.22s;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .city-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--border-hover);
+      box-shadow: 0 10px 30px rgba(59, 130, 246, 0.12);
+    }
+    .city-card .c-bg {
+      position: absolute; right: 10px; top: 10px; font-size: 56px; opacity: 0.05;
+      pointer-events: none; user-select: none;
+    }
+
+    .city-hdr {
+      display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;
+    }
+    .city-title {
+      font-size: 14px; font-weight: 800; color: var(--txt); display: flex; align-items: center; gap: 6px;
+    }
+    .city-title small { font-size: 10px; color: var(--muted); font-weight: 500; }
+    .city-cond {
+      font-size: 11px; color: var(--dim); display: flex; align-items: center; gap: 4px;
+    }
+
+    /* Dual Mini Round Gauge Container per City */
+    .dual-gauge-box {
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      margin: 4px 0 8px;
+    }
+
+    .mini-round-gauge {
+      position: relative;
+      width: 110px;
+      height: 110px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .mini-round-gauge svg {
+      width: 110px;
+      height: 110px;
+    }
+    .mini-gv {
+      position: absolute;
+      text-align: center;
+      pointer-events: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .mini-gv-val {
+      font-size: 18px; font-weight: 800; line-height: 1; letter-spacing: -0.5px;
+    }
+    .mini-gv-lbl {
+      font-size: 9px; font-weight: 600; color: var(--muted); text-transform: uppercase; margin-top: 3px;
+    }
+
+    .city-ftr {
+      display: flex; align-items: center; justify-content: space-between;
+      border-top: 1px solid var(--border); padding-top: 10px; font-size: 11px; color: var(--muted);
+    }
+    .wind-badge {
+      display: flex; align-items: center; gap: 4px; color: var(--blue); font-weight: 700;
+    }
+
+    /* Skeletons */
+    .sk {
+      background: linear-gradient(90deg, var(--card-bg2) 25%, rgba(255, 255, 255, 0.04) 50%, var(--card-bg2) 75%);
+      background-size: 200% 100%; animation: shim 1.3s infinite; border-radius: 6px;
+    }
+    @keyframes shim { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+    /* Alarm Banner */
+    #alarmBanner {
+      display: none; position: fixed; top: 68px; left: 50%; transform: translateX(-50%); z-index: 9999;
+      background: rgba(239, 68, 68, 0.96); border: 1px solid #f87171; border-radius: 14px;
+      padding: 12px 24px; font-size: 13px; font-weight: 700; color: #fff;
+      box-shadow: 0 8px 40px rgba(239, 68, 68, 0.5);
+      align-items: center; gap: 10px; white-space: nowrap; animation: bpop 0.3s ease;
+    }
+    @keyframes bpop { from { opacity:0; transform: translateX(-50%) translateY(-10px); } to { opacity:1; transform: translateX(-50%) translateY(0); } }
+    #alarmBanner .xb {
+      background: rgba(255, 255, 255, 0.2); border: none; color: #fff; width: 20px; height: 20px;
+      border-radius: 50%; cursor: pointer; font-size: 12px; display: flex; align-items: center;
+      justify-content: center; margin-left: 6px; flex-shrink: 0;
+    }
+
+    footer {
+      text-align: center; font-size: 10px; color: var(--muted);
+      padding: 24px; border-top: 1px solid var(--border); margin-top: 40px;
+    }
+
+    @media (max-width: 960px) {
+      header { padding: 14px 20px; }
+      main { padding: 20px; }
+      .it-grid { grid-template-columns: 1fr; }
+      .city-grid { grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); }
     }
   </style>
 </head>
@@ -262,91 +340,86 @@
 
 <main>
 
-  <!-- IT Room -->
-  <div class="sec">🏢 IT Room — Local Sensor</div>
-  <div class="gauge-row">
+  <!-- IT Room Section -->
+  <div class="sec-title">🏢 IT Room — Local Sensor (Blynk IoT)</div>
+  <div class="it-grid">
 
-    <!-- TEMP GAUGE -->
-    <div class="g-card c-temp">
-      <div class="g-label">🌡️ Temperature</div>
-      <div class="gauge-box" id="tempGaugeBox">
-        <svg width="240" height="140" viewBox="0 0 240 140">
-          <path class="arc-bg" d="M 20 130 A 100 100 0 0 1 220 130" stroke-width="18"/>
-          <path class="arc-fg" id="tArc"
-            d="M 20 130 A 100 100 0 0 1 220 130" stroke-width="18"
-            stroke="url(#tGr)"
-            stroke-dasharray="314"
-            stroke-dashoffset="314"/>
-          <defs>
-            <linearGradient id="tGr" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stop-color="#f97316"/>
-              <stop offset="50%" stop-color="#ef4444"/>
-              <stop offset="100%" stop-color="#dc2626"/>
-            </linearGradient>
-          </defs>
+    <!-- IT TEMP GAUGE -->
+    <div class="it-card">
+      <div class="card-title">IT Room Temp</div>
+
+      <!-- 270-degree round SVG arc gauge -->
+      <div class="round-gauge-container">
+        <svg viewBox="0 0 200 200">
+          <circle class="gauge-track" cx="100" cy="100" r="70" stroke-width="14"
+            stroke-dasharray="329.87 109.96" transform="rotate(135 100 100)"/>
+          <circle class="gauge-fill" id="itTFill" cx="100" cy="100" r="70" stroke-width="14"
+            stroke="#10b981"
+            stroke-dasharray="0 440"
+            transform="rotate(135 100 100)"/>
         </svg>
-        <div class="gauge-val">
-          <div class="gv" id="itT" style="color:#f97316;">
-            <div class="sk" style="width:80px;height:44px;"></div>
-          </div>
-          <div class="gu" id="itTU"></div>
+        <div class="gauge-center-val">
+          <span class="g-main-val" id="itTVal"><div class="sk" style="width:65px;height:40px;"></div></span>
+          <span class="g-unit-val" id="itTUnit"></span>
         </div>
-        <span class="gauge-min">0°</span>
-        <span class="gauge-max">60°</span>
       </div>
-      <div class="g-sub" id="itTSub">IT Room Temperature</div>
+
+      <div class="g-end-labels">
+        <span>0</span>
+        <span>60</span>
+      </div>
+
+      <div class="card-ftr" id="itTSub">IT Room Temperature</div>
     </div>
 
-    <!-- HUMID GAUGE -->
-    <div class="g-card c-humid">
-      <div class="g-label">💧 Humidity</div>
-      <div class="gauge-box" id="humidGaugeBox">
-        <svg width="240" height="140" viewBox="0 0 240 140">
-          <path class="arc-bg" d="M 20 130 A 100 100 0 0 1 220 130" stroke-width="18"/>
-          <path class="arc-fg" id="hArc"
-            d="M 20 130 A 100 100 0 0 1 220 130" stroke-width="18"
-            stroke="url(#hGr)"
-            stroke-dasharray="314"
-            stroke-dashoffset="314"/>
-          <defs>
-            <linearGradient id="hGr" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stop-color="#3b82f6"/>
-              <stop offset="50%" stop-color="#06b6d4"/>
-              <stop offset="100%" stop-color="#10b981"/>
-            </linearGradient>
-          </defs>
+    <!-- IT HUMID GAUGE -->
+    <div class="it-card">
+      <div class="card-title">IT Room Humidity</div>
+
+      <!-- 270-degree round SVG arc gauge -->
+      <div class="round-gauge-container">
+        <svg viewBox="0 0 200 200">
+          <circle class="gauge-track" cx="100" cy="100" r="70" stroke-width="14"
+            stroke-dasharray="329.87 109.96" transform="rotate(135 100 100)"/>
+          <circle class="gauge-fill" id="itHFill" cx="100" cy="100" r="70" stroke-width="14"
+            stroke="#06b6d4"
+            stroke-dasharray="0 440"
+            transform="rotate(135 100 100)"/>
         </svg>
-        <div class="gauge-val">
-          <div class="gv" id="itH" style="color:#06b6d4;">
-            <div class="sk" style="width:80px;height:44px;"></div>
-          </div>
-          <div class="gu" id="itHU"></div>
+        <div class="gauge-center-val">
+          <span class="g-main-val" id="itHVal"><div class="sk" style="width:65px;height:40px;"></div></span>
+          <span class="g-unit-val" id="itHUnit"></span>
         </div>
-        <span class="gauge-min">0%</span>
-        <span class="gauge-max">100%</span>
       </div>
-      <div class="g-sub">Relative Humidity</div>
+
+      <div class="g-end-labels">
+        <span>0</span>
+        <span>100</span>
+      </div>
+
+      <div class="card-ftr">Relative Humidity</div>
     </div>
 
-    <!-- ALARM -->
-    <div class="g-card c-alarm">
-      <div class="g-label">🚨 Alarm Status</div>
-      <div class="alarm-wrap">
-        <div id="aBadge"><div class="sk" style="width:140px;height:44px;border-radius:14px;"></div></div>
+    <!-- ALARM STATUS -->
+    <div class="it-card">
+      <div class="card-title">Alarm Status</div>
+      <div class="alarm-content">
+        <div id="aBadge"><div class="sk" style="width:130px;height:40px;border-radius:12px;"></div></div>
         <div class="alarm-info">Temp &gt; 23°C or RH outside 40–60%<br>triggers relay alarm.</div>
       </div>
-      <div class="g-sub" style="text-align:center">ASHRAE Class A1 Thresholds</div>
+      <div class="card-ftr">ASHRAE Class A1 Limits</div>
     </div>
+
   </div>
 
-  <!-- Cities -->
-  <div class="sec">🌍 Saudi Arabia — Live City Weather (OpenWeatherMap)</div>
+  <!-- Saudi Arabia Cities Section -->
+  <div class="sec-title">🌍 Saudi Arabia — City Weather Gauges (OpenWeatherMap Live)</div>
   <div class="city-grid" id="cGrid"></div>
 
 </main>
 
 <footer>
-  IT Room from <strong>Blynk IoT</strong> &nbsp;|&nbsp; Cities from <strong>OpenWeatherMap API</strong> &nbsp;|&nbsp;
+  IT Room via <strong>Blynk IoT Cloud</strong> &nbsp;|&nbsp; Cities via <strong>OpenWeatherMap API</strong> &nbsp;|&nbsp;
   Auto-refresh every <strong>5 min</strong>
 </footer>
 
@@ -358,13 +431,13 @@
   const OWM_BASE    = 'https://api.openweathermap.org/data/2.5/weather';
 
   const CITIES = [
-    { name:'Jeddah',  icon:'🕌', id:105343 },
-    { name:'Makkah',  icon:'🕋', id:104515 },
-    { name:'Madinah', icon:'🌙', id:109223 },
-    { name:'Riyadh',  icon:'🏙️', id:108410 },
-    { name:'Dammam',  icon:'🏭', id:110336 },
-    { name:'Taif',    icon:'🌿', id:107968 },
-    { name:'Al Bahah',icon:'⛰️', id:109953 },
+    { name: 'Jeddah',   icon: '🕌', id: 105343 },
+    { name: 'Makkah',   icon: '🕋', id: 104515 },
+    { name: 'Madinah',  icon: '🌙', id: 109223 },
+    { name: 'Riyadh',   icon: '🏙️', id: 108410 },
+    { name: 'Dammam',   icon: '🏭', id: 110336 },
+    { name: 'Taif',     icon: '🌿', id: 107968 },
+    { name: 'Al Bahah', icon: '⛰️', id: 109953 },
   ];
 
   const WEATHER_ICONS = {
@@ -382,45 +455,65 @@
     } catch { return null; }
   }
 
-  // ══════ GAUGE HELPER ══════
-  // Semi-circle arc length = π * r = π * 100 ≈ 314
-  function setArc(id, val, max) {
-    const total = 314;
-    const pct   = Math.min(Math.max(val / max, 0), 1);
-    const el    = document.getElementById(id);
-    if (el) el.style.strokeDashoffset = total - pct * total;
+  // ══════ DYNAMIC ARC GAUGE FILL CALCULATION ══════
+  // For Big Gauge R=70 -> Total Arc Length = 329.87
+  function setBigRoundGauge(id, val, max, isTemp = false) {
+    const totalLen = 329.87;
+    const pct = Math.min(Math.max(val / max, 0), 1);
+    const filledLen = (pct * totalLen).toFixed(2);
+    const el = document.getElementById(id);
+    if (el) {
+      el.style.strokeDasharray = `${filledLen} 440`;
+      if (isTemp) {
+        // Dynamic color highlight: Red if above 23°C, Green if safe
+        el.style.stroke = val > 23 ? '#ff4757' : '#10b981';
+      }
+    }
   }
 
-  // ══════ IT ROOM ══════
+  // For Mini Gauge R=38 -> Total Arc Length = 179.07
+  function setMiniRoundGauge(id, val, max) {
+    const totalLen = 179.07;
+    const pct = Math.min(Math.max(val / max, 0), 1);
+    const filledLen = (pct * totalLen).toFixed(2);
+    const el = document.getElementById(id);
+    if (el) {
+      el.style.strokeDasharray = `${filledLen} 240`;
+    }
+  }
+
+  // ══════ IT ROOM FETCH ══════
   async function fetchIT() {
     const [rT, rH, rA] = await Promise.all([bPin(0), bPin(1), bPin(2)]);
     const temp = parseFloat(rT), humid = parseFloat(rH), alarm = parseInt(rA);
 
     // Temp
-    const tEl = document.getElementById('itT');
-    const tU  = document.getElementById('itTU');
-    const tS  = document.getElementById('itTSub');
+    const tVal = document.getElementById('itTVal');
+    const tU   = document.getElementById('itTUnit');
+    const tSub = document.getElementById('itTSub');
     if (!isNaN(temp)) {
-      tEl.textContent = temp.toFixed(1);
-      tU.textContent  = '°C';
-      setArc('tArc', temp, 60);
+      tVal.textContent = temp.toFixed(1);
+      tU.textContent   = '°C';
+      setBigRoundGauge('itTFill', temp, 60, true);
       if (temp > 23) {
-        tS.innerHTML = '⚠️ Above threshold (23°C)'; tS.style.color = '#ef4444';
+        tVal.style.color = '#ff4757';
+        tSub.innerHTML = '⚠️ Above threshold (23°C)'; tSub.style.color = '#ff4757';
       } else {
-        tS.innerHTML = '✅ Within normal range'; tS.style.color = '#10b981';
+        tVal.style.color = '#10b981';
+        tSub.innerHTML = '✅ Within normal range'; tSub.style.color = '#10b981';
       }
-    } else { tEl.innerHTML = '<span style="font-size:14px;color:var(--muted)">No data</span>'; }
+    } else { tVal.innerHTML = '<span style="font-size:14px;color:var(--muted)">No data</span>'; }
 
     // Humid
-    const hEl = document.getElementById('itH');
-    const hU  = document.getElementById('itHU');
+    const hVal = document.getElementById('itHVal');
+    const hU   = document.getElementById('itHUnit');
     if (!isNaN(humid)) {
-      hEl.textContent = humid.toFixed(0);
-      hU.textContent  = '%';
-      setArc('hArc', humid, 100);
-    } else { hEl.innerHTML = '<span style="font-size:14px;color:var(--muted)">No data</span>'; }
+      hVal.textContent = humid.toFixed(0);
+      hU.textContent   = '%';
+      setBigRoundGauge('itHFill', humid, 100, false);
+    } else { hVal.innerHTML = '<span style="font-size:14px;color:var(--muted)">No data</span>'; }
 
-    // Alarm badge
+    // Alarm Badge
     const ab = document.getElementById('aBadge');
     if (rA !== null) {
       ab.innerHTML = alarm === 1
@@ -431,7 +524,7 @@
     checkAlarms(temp, humid);
   }
 
-  // ══════ CITIES (OpenWeatherMap) ══════
+  // ══════ CITIES FETCH (270° DYNAMIC GAUGES FOR ALL CITIES) ══════
   async function fetchCities() {
     const grid = document.getElementById('cGrid');
 
@@ -439,15 +532,20 @@
     if (grid.childElementCount === 0) {
       CITIES.forEach(c => {
         const d = document.createElement('div');
-        d.className = 'c-card'; d.id = 'cc-' + c.id;
+        d.className = 'city-card'; d.id = 'cc-' + c.id;
         d.innerHTML = `
           <div class="c-bg">${c.icon}</div>
-          <div class="c-name"><span>${c.icon} ${c.name}</span><small>SA</small></div>
-          <div class="sk" style="width:100px;height:42px;margin-bottom:8px;"></div>
-          <div class="sk" style="width:80px;height:12px;margin-bottom:14px;"></div>
-          <div class="c-stats">
-            <div class="c-stat"><div class="c-stat-l">Humidity</div><div class="sk" style="width:36px;height:14px;margin-top:4px;"></div></div>
-            <div class="c-stat"><div class="c-stat-l">Wind</div><div class="sk" style="width:46px;height:14px;margin-top:4px;"></div></div>
+          <div class="city-hdr">
+            <div class="city-title"><span>${c.icon} ${c.name}</span><small>SA</small></div>
+            <div class="sk" style="width:50px;height:14px;"></div>
+          </div>
+          <div class="dual-gauge-box">
+            <div class="sk" style="width:90px;height:90px;border-radius:50%;"></div>
+            <div class="sk" style="width:90px;height:90px;border-radius:50%;"></div>
+          </div>
+          <div class="city-ftr">
+            <div class="sk" style="width:70px;height:12px;"></div>
+            <div class="sk" style="width:50px;height:12px;"></div>
           </div>`;
         grid.appendChild(d);
       });
@@ -461,45 +559,82 @@
 
         const temp  = d.main.temp;
         const humid = d.main.humidity;
-        const wind  = (d.wind.speed * 3.6).toFixed(1); // m/s → km/h
+        const wind  = (d.wind.speed * 3.6).toFixed(1);
         const desc  = d.weather[0].description;
         const ico   = WEATHER_ICONS[d.weather[0].icon] || '🌤️';
 
         const card = document.getElementById('cc-' + city.id);
         if (!card) return;
+
         card.innerHTML = `
           <div class="c-bg">${city.icon}</div>
-          <div class="c-name"><span>${city.icon} ${d.name || city.name}</span><small>SA</small></div>
-          <div class="c-icon">${ico}</div>
-          <div class="c-temp">${temp.toFixed(1)}<span class="c-temp-u">°C</span></div>
-          <div class="c-desc">${desc}</div>
-          <div class="c-stats">
-            <div class="c-stat">
-              <div class="c-stat-l">Humidity</div>
-              <div class="c-stat-v h">${humid}%</div>
+          <div class="city-hdr">
+            <div class="city-title"><span>${city.icon} ${d.name || city.name}</span><small>SA</small></div>
+            <div class="city-cond">${ico} <span style="text-transform:capitalize;">${desc}</span></div>
+          </div>
+
+          <!-- Dual 270-degree Dynamic Mini Round Gauges -->
+          <div class="dual-gauge-box">
+
+            <!-- Mini Temp Gauge -->
+            <div class="mini-round-gauge">
+              <svg viewBox="0 0 100 100">
+                <circle class="gauge-track" cx="50" cy="50" r="38" stroke-width="8"
+                  stroke-dasharray="179.07 59.69" transform="rotate(135 50 50)"/>
+                <circle class="gauge-fill" id="ctFill-${city.id}" cx="50" cy="50" r="38" stroke-width="8"
+                  stroke="#ff6b6b"
+                  stroke-dasharray="0 240"
+                  transform="rotate(135 50 50)"/>
+              </svg>
+              <div class="mini-gv">
+                <div class="mini-gv-val" style="color:#ff6b6b;">${temp.toFixed(1)}<span style="font-size:10px;">°C</span></div>
+                <div class="mini-gv-lbl">Temp</div>
+              </div>
             </div>
-            <div class="c-stat">
-              <div class="c-stat-l">Wind</div>
-              <div class="c-stat-v w">${wind} km/h</div>
+
+            <!-- Mini Humid Gauge -->
+            <div class="mini-round-gauge">
+              <svg viewBox="0 0 100 100">
+                <circle class="gauge-track" cx="50" cy="50" r="38" stroke-width="8"
+                  stroke-dasharray="179.07 59.69" transform="rotate(135 50 50)"/>
+                <circle class="gauge-fill" id="chFill-${city.id}" cx="50" cy="50" r="38" stroke-width="8"
+                  stroke="#06b6d4"
+                  stroke-dasharray="0 240"
+                  transform="rotate(135 50 50)"/>
+              </svg>
+              <div class="mini-gv">
+                <div class="mini-gv-val" style="color:#06b6d4;">${humid.toFixed(0)}<span style="font-size:10px;">%</span></div>
+                <div class="mini-gv-lbl">Humidity</div>
+              </div>
             </div>
+
+          </div>
+
+          <div class="city-ftr">
+            <span>Feels like ${d.main.feels_like.toFixed(1)}°C</span>
+            <div class="wind-badge">💨 ${wind} <small>km/h</small></div>
           </div>`;
+
+        // Trigger mini gauge animation to exact value length
+        setTimeout(() => {
+          setMiniRoundGauge(`ctFill-${city.id}`, temp, 60);
+          setMiniRoundGauge(`chFill-${city.id}`, humid, 100);
+        }, 50);
+
       } catch (e) {
         const card = document.getElementById('cc-' + city.id);
         if (card) {
           card.innerHTML = `
-            <div class="c-bg">${city.icon}</div>
-            <div class="c-name"><span>${city.icon} ${city.name}</span><small>SA</small></div>
-            <div style="padding:20px 0;text-align:center;color:var(--muted);font-size:12px;">
-              ⚠️ Unable to fetch data
-            </div>`;
+            <div class="city-hdr"><div class="city-title"><span>${city.icon} ${city.name}</span></div></div>
+            <div style="padding:20px 0;text-align:center;color:var(--muted);font-size:12px;">⚠️ Unable to fetch weather</div>`;
         }
       }
     }));
   }
 
-  // ══════ ALARM SYSTEM ══════
+  // ══════ ALARM & NOTIFICATION SYSTEM ══════
   let cooldown = false;
-  const CD_MS  = 5 * 60 * 1000;
+  const CD_MS = 5 * 60 * 1000;
 
   function reqNotif() {
     if (!('Notification' in window)) { alert('Browser does not support notifications.'); return; }
@@ -508,21 +643,21 @@
   function syncBtn() {
     const b = document.getElementById('nBtn');
     const p = Notification.permission;
-    if (p === 'granted')     { b.textContent = '✅ Alerts ON';  b.className = 'btn btn-notif on'; b.onclick = null; }
-    else if (p === 'denied') { b.textContent = '❌ Blocked';    b.className = 'btn btn-notif off'; b.onclick = null; }
-    else                     { b.textContent = '🔔 Enable Alerts'; b.className = 'btn btn-notif'; }
+    if (p === 'granted') { b.textContent = '✅ Alerts ON'; b.className = 'btn btn-notif on'; b.onclick = null; }
+    else if (p === 'denied') { b.textContent = '❌ Blocked'; b.className = 'btn btn-notif off'; b.onclick = null; }
+    else { b.textContent = '🔔 Enable Alerts'; b.className = 'btn btn-notif'; }
   }
 
   function beep() {
     try {
       const ctx = new (window.AudioContext || window.webkitAudioContext)();
-      [0,.32,.64,.96,1.28].forEach(t => {
+      [0, 0.32, 0.64, 0.96, 1.28].forEach(t => {
         const o = ctx.createOscillator(), g = ctx.createGain();
         o.connect(g); g.connect(ctx.destination);
         o.type = 'square'; o.frequency.setValueAtTime(880, ctx.currentTime + t);
-        g.gain.setValueAtTime(.22, ctx.currentTime + t);
-        g.gain.exponentialRampToValueAtTime(.001, ctx.currentTime + t + .26);
-        o.start(ctx.currentTime + t); o.stop(ctx.currentTime + t + .26);
+        g.gain.setValueAtTime(0.22, ctx.currentTime + t);
+        g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + t + 0.26);
+        o.start(ctx.currentTime + t); o.stop(ctx.currentTime + t + 0.26);
       });
     } catch(e) {}
   }
@@ -539,7 +674,7 @@
     if (tBad) m.push('Temp ' + temp.toFixed(1) + '°C > 23°C');
     if (hLow) m.push('Humidity ' + humid.toFixed(0) + '% < 40%');
     if (hHi)  m.push('Humidity ' + humid.toFixed(0) + '% > 60%');
-    const full = '🚨 IT Room: ' + m.join(' | ');
+    const full = '🚨 IT Room Alert: ' + m.join(' | ');
 
     document.getElementById('abMsg').textContent = full;
     document.getElementById('alarmBanner').style.display = 'flex';
@@ -573,7 +708,7 @@
       await Promise.all([fetchIT(), fetchCities()]);
       const now = new Date();
       document.getElementById('tsUp').textContent =
-        'Updated ' + now.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+        'Updated ' + now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'});
       ld.style.background = '#10b981'; st.textContent = 'Live';
       if (document.title.startsWith('⚠')) {
         const [rT, rH] = await Promise.all([bPin(0), bPin(1)]);
